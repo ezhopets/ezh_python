@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 
 
 class Application(tk.Frame):
@@ -11,7 +12,14 @@ class Application(tk.Frame):
 
         self.grid(sticky="NEWS")
 
+        self.the_end = []
+        for i in range(1, 5):
+            for j in range(0, 4):
+                self.the_end.append([i,j])
+        self.the_end.pop()
+
         self.createWidgets()
+
 
     def createWidgets(self):
         self.void_col = 3
@@ -50,6 +58,18 @@ class Application(tk.Frame):
             self.buttons[i].grid(row = self.void_row, column = self.void_col)
             self.void_col = col
             self.void_row = row
+            if self.check():
+                tk.messagebox.showinfo("Victory", "You Win!")
+
+    def check(self):
+        position = []
+        for i in range(1, 16):
+            row = self.buttons[i].grid_info()['row']
+            col = self.buttons[i].grid_info()['column']
+            position.append([row,col])
+        if self.the_end == position:
+            return True
+        return False
 
 
 def main():
