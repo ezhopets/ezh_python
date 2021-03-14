@@ -4,12 +4,13 @@ from tkinter import messagebox
 
 
 class Application(tk.Frame):
-    def __init__(self, master=None, title = 'App', **kwargs):
+    def __init__(self, master=None, title = 'App', geometry = '500x500', **kwargs):
         super().__init__(master, **kwargs)
 
         self.master.rowconfigure(0, weight = 1)
         self.master.columnconfigure(0, weight = 1)
         self.master.title(title)
+        self.master.geometry(geometry)
 
         self.grid(sticky="NEWS")
 
@@ -38,7 +39,7 @@ class Application(tk.Frame):
 
         self.buttons = dict()
         for i in range(1, 16):
-            self.buttons[i] = tk.Button(self, text = str(i), command=lambda i=i: self.change_location(i))
+            self.buttons[i] = tk.Button(self, text = str(i), command=lambda i=i: self.change_location(i), width=10)
 
         self.create_butt(gen)
 
@@ -46,9 +47,6 @@ class Application(tk.Frame):
         self.quit.grid(row=0, column= 2, columnspan = 2, sticky="NS")
 
     def create_butt(self, gen):
-        #self.void_col = self.size - 1
-        #self.void_row = self.size
-
         summ = 0
         for i in range(0, 15):
             for j in range(i + 1, 15):
@@ -96,7 +94,7 @@ class Application(tk.Frame):
 
 
 def main():
-    app = Application(title = '15 puzzle')
+    app = Application(title = '15 puzzle', geometry = '500x500')
     app.mainloop()
 
 
