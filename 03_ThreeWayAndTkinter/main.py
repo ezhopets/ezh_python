@@ -13,6 +13,7 @@ class Application(tk.Frame):
         self.master.geometry(geometry)
 
         self.grid(sticky="NEWS")
+        self.configure(background='royal blue')
 
         self.the_end = []
         for i in range(1, 5):
@@ -20,10 +21,13 @@ class Application(tk.Frame):
                 self.the_end.append([i,j])
         self.the_end.pop()
 
-        self.createWidgets(range(1, 16))
+        self.buttons_design = dict(activebackground = 'navy',\
+                activeforeground= 'gold', bd = 4, bg = 'blue', fg = 'yellow', font = ("Comic Sans MS", 20, "bold"))
+
+        self.createWidgets()
 
 
-    def createWidgets(self, gen = None):
+    def createWidgets(self):
         self.void_col = 3
         self.void_row = 4
 
@@ -34,14 +38,14 @@ class Application(tk.Frame):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(4, weight=1)
 
-        self.new = tk.Button(self, text='New', command=self.random_gen)
-        self.quit = tk.Button(self, text='Quit', command=self.quit)
+        self.new = tk.Button(self, text='New', command=self.random_gen, **self.buttons_design)
+        self.quit = tk.Button(self, text='Quit', command=self.quit, **self.buttons_design)
 
         self.buttons = dict()
         for i in range(1, 16):
-            self.buttons[i] = tk.Button(self, text = str(i), command=lambda i=i: self.change_location(i), width=10)
+            self.buttons[i] = tk.Button(self, text = str(i), command=lambda i=i: self.change_location(i), width=10, **self.buttons_design)
 
-        self.create_butt(gen)
+        self.random_gen()
 
         self.new.grid(row=0, column=0, columnspan = 2, sticky="NS")
         self.quit.grid(row=0, column= 2, columnspan = 2, sticky="NS")
