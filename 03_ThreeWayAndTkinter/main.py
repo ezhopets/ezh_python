@@ -46,6 +46,17 @@ class Application(tk.Frame):
         self.quit.grid(row=0, column= 2, columnspan = 2, sticky="NS")
 
     def create_butt(self, gen):
+        #self.void_col = self.size - 1
+        #self.void_row = self.size
+
+        summ = 0
+        for i in range(0, 15):
+            for j in range(i + 1, 15):
+                if gen[i] > gen[j]:
+                    summ += 1
+        if summ % 2:
+            gen[14], gen[13] = gen[13], gen[14]
+
         row_ = 1
         col_ = 0
         for i in gen:
