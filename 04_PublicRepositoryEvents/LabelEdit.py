@@ -112,15 +112,22 @@ class InputLabel(tk.Label):
 
         if self.textvar:
             if sequre_check(self.textvar.get()):
-                self.textvar.set(str(eval(self.textvar.get())))
+                try:
+                    self.textvar.set(str(eval(self.textvar.get())))
+                except Exception as exc:
+                    self.textvar.set(str(type(exc).__name__))
+
             else:
-                self.textvar.set("Error")
+                self.textvar.set("Error!")
 
         else:
             if sequre_check(self["text"]):
-                self.config(text = str(eval(self["text"])))
+                try:
+                    self.config(text = str(eval(self["text"])))
+                except Exception as exc:
+                    self.config(text =str(type(exc).__name__))
             else:
-                self.config(text = "Error")
+                self.config(text = "Error!")
 
         self.right_border = len(self['text']) * self.m_len
 
