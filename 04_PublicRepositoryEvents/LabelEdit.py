@@ -29,7 +29,7 @@ class Application(tk.Frame):
         textvar.set("pupa")
 
         self.quit = tk.Button(self, font = ('fixed', 10,  'bold'),text='Quit', command=self.master.quit, **self.buttons_design)
-        self.l = InputLabel(self, font= "fixed", text='lupa', cursor='heart', takefocus=1, highlightthickness = 3, anchor = 'w')
+        self.l = InputLabel(self, font= "fixed", text='Python <3', cursor='spider', takefocus=1, highlightthickness = 3, anchor = 'w')
         self.calc = tk.Button(self, font = ('fixed', 10,  'bold'),text=' = ', command = self.l.calc, **self.buttons_design)
 
         self.l.grid(row=0, column=0, columnspan = 2, sticky = "EW")
