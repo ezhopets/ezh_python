@@ -45,19 +45,31 @@ class InputLabel(tk.Label):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.font = tkFont.Font(font=("Courier", 20))
+        self.config(font = self.font)
+        self.m_len = self.font.measure('A')
+        self.metrix = self.font.metrics()
+
         try:
             self.textvar = kwargs["textvariable"]
+            self.right_border = len(self.textvar.get()) * self.m_len
         except:
             self.textvar = None
             try:
                 self.text = kwargs["text"]
+                self.right_border = len(self.text) * self.m_len
             except:
                 self.text = None
+                self.right_border = 0
+
+        self.cur_pos = self.right_border // self.m_len
 
         self.bind("<KeyPress>", self.key_press)
         self.bind("<Button-1>", self.foc)
         self.bind("<FocusIn>", self.focus_in)
         self.bind("<FocusOut>", self.focus_out)
+        self.bind("<Left>", self.move_left)
+        self.bind("<Right>", self.move_right)
 
         self.createWidgets()
 
@@ -71,13 +83,36 @@ class InputLabel(tk.Label):
     def key_press(self, event):
         if (event.char):
             if self.textvar:
-                self.textvar.set(self.textvar.get()[:] + event.char)
-                self.xVar.set(self.xVar.get() + 10)
+                self.textvar.set(self.textvar.get()[:self.cur_pos] + event.char + self.textvar.get()[self.cur_pos:])
+
+                self.xVar.set(self.xVar.get() + self.m_len)
                 self.frame.place(x= self.xVar.get(), y = self.y)
+                self.right_border += self.m_len
+                self.cur_pos += 1
             else:
-                self.config(text = self["text"][:] + event.char)
-                self.xVar.set(self.xVar.get() + 10)
+                self.config(text = self["text"][:self.cur_pos] + event.char + self["text"][self.cur_pos:])
+                self.xVar.set(self.xVar.get() + self.m_len)
                 self.frame.place(x= self.xVar.get(), y = self.y)
+                self.right_border += self.m_len
+                self.cur_pos += 1
+
+    def move_left(self, event):
+        new_x = self.xVar.get() - self.m_len
+        if (new_x >= 0):
+            self.xVar.set(new_x)
+            self.frame.place(x= self.xVar.get(), y = self.y)
+            self.cur_pos -= 1
+            return True
+        return False
+
+
+    def move_right(self, event):
+        new_x = self.xVar.get() + self.m_len
+
+        if (new_x <= self.right_border):
+            self.xVar.set(new_x)
+            self.frame.place(x= self.xVar.get(), y = self.y)
+            self.cur_pos += 1
 
     def focus_in(self, event):
         self.frame.place(x= self.xVar.get(), y = self.y)
@@ -87,6 +122,9 @@ class InputLabel(tk.Label):
 
     def foc(self, event):
         self.focus_force()
+        self.xVar.set(self.right_border)
+        self.cur_pos = self.right_border // self.m_len
+        self.frame.place(x= self.xVar.get(), y = self.y)
 
 
 def main():
