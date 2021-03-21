@@ -73,6 +73,9 @@ class InputLabel(tk.Label):
         self.bind("<Right>", self.move_right)
         self.bind("<Home>", self.move_home)
         self.bind("<End>", self.move_end)
+        self.bind("<Tab>", self.ignore)
+        self.bind("<Escape>", self.ignore)
+        self.bind("<Return>", self.ignore)
 
         self.createWidgets()
 
@@ -98,6 +101,9 @@ class InputLabel(tk.Label):
                 self.frame.place(x= self.xVar.get(), y = self.y)
                 self.right_border += self.m_len
                 self.cur_pos += 1
+
+    def ignore(self, event):
+        pass
 
     def move_left(self, event = None):
         new_x = self.xVar.get() - self.m_len
