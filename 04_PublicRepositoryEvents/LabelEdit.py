@@ -55,6 +55,10 @@ class InputLabel(tk.Label):
                 self.text = None
 
         self.bind("<KeyPress>", self.key_press)
+        self.bind("<Button-1>", self.foc)
+        self.bind("<FocusIn>", self.focus_in)
+        self.bind("<FocusOut>", self.focus_out)
+
         self.createWidgets()
 
     def createWidgets(self):
@@ -63,8 +67,6 @@ class InputLabel(tk.Label):
 
         self.xVar.set(0)
         self.frame = tk.Frame(self, height= 20, width = 4, bg = 'red')
-
-        self.frame.place(x= self.xVar.get(), y = 0)
 
     def key_press(self, event):
         if (event.char):
@@ -76,6 +78,15 @@ class InputLabel(tk.Label):
                 self.config(text = self["text"][:] + event.char)
                 self.xVar.set(self.xVar.get() + 10)
                 self.frame.place(x= self.xVar.get(), y = self.y)
+
+    def focus_in(self, event):
+        self.frame.place(x= self.xVar.get(), y = self.y)
+
+    def focus_out(self, event):
+        self.frame.place_forget()
+
+    def foc(self, event):
+        self.focus_force()
 
 
 def main():
