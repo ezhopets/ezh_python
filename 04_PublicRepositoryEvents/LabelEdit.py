@@ -71,6 +71,8 @@ class InputLabel(tk.Label):
         self.bind("<FocusOut>", self.focus_out)
         self.bind("<Left>", self.move_left)
         self.bind("<Right>", self.move_right)
+        self.bind("<Home>", self.move_home)
+        self.bind("<End>", self.move_end)
 
         self.createWidgets()
 
@@ -79,7 +81,7 @@ class InputLabel(tk.Label):
         self.y = 0
 
         self.xVar.set(0)
-        self.frame = tk.Frame(self, height= 20, width = 4, bg = 'red')
+        self.frame = tk.Frame(self, height= self.metrix['linespace'], width = 4, bg = 'red')
 
     def key_press(self, event):
         if (event.char):
@@ -114,6 +116,18 @@ class InputLabel(tk.Label):
             self.xVar.set(new_x)
             self.frame.place(x= self.xVar.get(), y = self.y)
             self.cur_pos += 1
+
+    def move_home(self, event):
+        new_x = 0
+        self.xVar.set(new_x)
+        self.frame.place(x= self.xVar.get(), y = self.y)
+        self.cur_pos = 0
+
+    def move_end(self, event):
+        new_x = self.right_border
+        self.xVar.set(new_x)
+        self.frame.place(x= self.xVar.get(), y = self.y)
+        self.cur_pos = self.right_border // self.m_len
 
     def back_space(self, *arg):
         if self.textvar and self.textvar.get():
