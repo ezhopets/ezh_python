@@ -45,13 +45,37 @@ class InputLabel(tk.Label):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        try:
+            self.textvar = kwargs["textvariable"]
+        except:
+            self.textvar = None
+            try:
+                self.text = kwargs["text"]
+            except:
+                self.text = None
 
+        self.bind("<KeyPress>", self.key_press)
         self.createWidgets()
 
     def createWidgets(self):
+        self.xVar = tk.IntVar()
+        self.y = 0
+
+        self.xVar.set(0)
         self.frame = tk.Frame(self, height= 20, width = 4, bg = 'red')
 
-        self.frame.place(x= 10, y = 0)
+        self.frame.place(x= self.xVar.get(), y = 0)
+
+    def key_press(self, event):
+        if (event.char):
+            if self.textvar:
+                self.textvar.set(self.textvar.get()[:] + event.char)
+                self.xVar.set(self.xVar.get() + 10)
+                self.frame.place(x= self.xVar.get(), y = self.y)
+            else:
+                self.config(text = self["text"][:] + event.char)
+                self.xVar.set(self.xVar.get() + 10)
+                self.frame.place(x= self.xVar.get(), y = self.y)
 
 
 def main():
