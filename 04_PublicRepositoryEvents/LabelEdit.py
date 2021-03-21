@@ -65,6 +65,7 @@ class InputLabel(tk.Label):
         self.cur_pos = self.right_border // self.m_len
 
         self.bind("<KeyPress>", self.key_press)
+        self.bind("<KeyPress-BackSpace>", self.back_space)
         self.bind("<Button-1>", self.foc)
         self.bind("<FocusIn>", self.focus_in)
         self.bind("<FocusOut>", self.focus_out)
@@ -96,7 +97,7 @@ class InputLabel(tk.Label):
                 self.right_border += self.m_len
                 self.cur_pos += 1
 
-    def move_left(self, event):
+    def move_left(self, event = None):
         new_x = self.xVar.get() - self.m_len
         if (new_x >= 0):
             self.xVar.set(new_x)
@@ -113,6 +114,16 @@ class InputLabel(tk.Label):
             self.xVar.set(new_x)
             self.frame.place(x= self.xVar.get(), y = self.y)
             self.cur_pos += 1
+
+    def back_space(self, *arg):
+        if self.textvar and self.textvar.get():
+            if (self.move_left()):
+                self.textvar.set(self.textvar.get()[:self.cur_pos] + self.textvar.get()[self.cur_pos + 1:])
+                self.right_border -= self.m_len
+        elif self["text"]:
+            if (self.move_left()):
+                self.config(text = self["text"][:self.cur_pos] + self["text"][self.cur_pos + 1:])
+                self.right_border -= self.m_len
 
     def focus_in(self, event):
         self.frame.place(x= self.xVar.get(), y = self.y)
