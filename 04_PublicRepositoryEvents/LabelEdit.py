@@ -153,9 +153,14 @@ class InputLabel(tk.Label):
 
     def foc(self, event):
         self.focus_force()
-        self.xVar.set(self.right_border)
-        self.cur_pos = self.right_border // self.m_len
-        self.frame.place(x= self.xVar.get(), y = self.y)
+        if (event.x > self.right_border):
+            self.xVar.set(self.right_border)
+            self.cur_pos = self.right_border // self.m_len
+            self.frame.place(x= self.xVar.get(), y = self.y)
+        else:
+            self.xVar.set((event.x + (1/4) * self.m_len) // self.m_len * self.m_len)
+            self.cur_pos = self.xVar.get() // self.m_len
+            self.frame.place(x= self.xVar.get(), y = self.y)
 
 
 def main():
