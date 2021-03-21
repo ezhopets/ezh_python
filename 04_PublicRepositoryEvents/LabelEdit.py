@@ -76,6 +76,7 @@ class InputLabel(tk.Label):
         self.bind("<Tab>", self.ignore)
         self.bind("<Escape>", self.ignore)
         self.bind("<Return>", self.ignore)
+        self.bind("<Delete>", self.delete)
 
         self.createWidgets()
 
@@ -115,7 +116,7 @@ class InputLabel(tk.Label):
         return False
 
 
-    def move_right(self, event):
+    def move_right(self, event=None):
         new_x = self.xVar.get() + self.m_len
 
         if (new_x <= self.right_border):
@@ -144,6 +145,19 @@ class InputLabel(tk.Label):
             if (self.move_left()):
                 self.config(text = self["text"][:self.cur_pos] + self["text"][self.cur_pos + 1:])
                 self.right_border -= self.m_len
+
+    def delete(self, *arg):
+        if self.textvar and self.textvar.get():
+            self.textvar.set(self.textvar.get()[:self.cur_pos] + self.textvar.get()[self.cur_pos + 1:])
+            new_x = self.xVar.get() + self.m_len
+            if (new_x <= self.right_border):
+                self.right_border -= self.m_len
+        elif self["text"]:
+            self.config(text = self["text"][:self.cur_pos] + self["text"][self.cur_pos + 1:])
+            new_x = self.xVar.get() + self.m_len
+            if (new_x <= self.right_border):
+                self.right_border -= self.m_len
+
 
     def focus_in(self, event):
         self.frame.place(x= self.xVar.get(), y = self.y)
