@@ -4,8 +4,8 @@ import tkinter as tk
 from colors import COLORS
 from tkinter.filedialog import askopenfilename, asksaveasfile
 from tkinter.colorchooser import askcolor
+from tkinter.simpledialog import askfloat
 
-#askcolor()
 
 class Application(tk.Frame):
     def __init__(self, master=None, title="App",
@@ -32,6 +32,8 @@ class Application(tk.Frame):
 
         self.fill = tk.StringVar()
         self.fill.set('white')
+
+        self.width = 1.0
 
         self.text = tk.StringVar()
         self.pattern = re.compile("(oval|rectangle|arc|line) (\[(-?\d+\.\d+), "
@@ -86,7 +88,8 @@ class Application(tk.Frame):
         self.C.bind_all("<Alt-KeyPress-z>", self.compile_left)
 
         self.ink_button = tk.Button(self.F2, text = 'Ink', width=7, command=self.choose_ink)
-        self.width = tk.Menubutton(self.F2, text='1', width=7)
+        self.width_button = tk.Button(self.F2, text='Width', command=self.choose_width)
+
         self.fill_button = tk.Button(self.F2, text='Fill', width=7, command=self.choose_fill)
         self.pic_fill = tk.Menubutton(self.F2, text = 'lol', width=7)
         self.shape_button = tk.Menubutton(self.F2, textvariable = self.shape, width=7)
@@ -103,9 +106,8 @@ class Application(tk.Frame):
         self.shape_button['menu'] = self.shape_button.menu
 
         self.coord = tk.Label(self.F2, textvariable = self.xy, width=7)
-
         self.ink_button.grid(row=0, column=0, sticky="EW")
-        self.width.grid(row=0, column=1, sticky="EW")
+        self.width_button.grid(row=0, column=1, sticky="EW")
         self.fill_button.grid(row=0, column=2, sticky="EW")
         self.pic_fill.grid(row=0, column=3, sticky="EW")
         self.shape_button.grid(row=0, column=4, sticky="EW")
@@ -120,10 +122,19 @@ class Application(tk.Frame):
         self.quit.grid(row=0, column=2, sticky="E")
 
     def choose_ink(self, *arg):
-        self.ink.set(askcolor()[-1])
+        color = askcolor()[-1]
+        if color:
+            self.ink.set(color)
 
     def choose_fill(self, *arg):
-        self.fill.set(askcolor()[-1])
+        color = askcolor()[-1]
+        if color:
+            self.fill.set(color)
+
+    def choose_width(self, *arg):
+        width = askfloat('lol', "Enter")
+        if width:
+            self.width = width
 
 
     def move(self, event):
@@ -144,13 +155,13 @@ class Application(tk.Frame):
             else:
                 self.C.delete(self.cur_obj)
                 if self.shape.get() == 'oval':
-                    self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), outline=self.ink.get())
+                    self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), outline=self.ink.get(), width=self.width)
                 elif self.shape.get() == 'rectangle':
-                    self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), outline=self.ink.get())
+                    self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), outline=self.ink.get(), width=self.width)
                 elif self.shape.get() == 'arc':
-                    self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), outline=self.ink.get())
+                    self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), outline=self.ink.get(), width=self.width)
                 elif self.shape.get() == 'line':
-                    self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get())
+                    self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), width=self.width)
 
     def press(self, event):
         self.mx1 = event.x
@@ -158,13 +169,13 @@ class Application(tk.Frame):
         self.if_press = True
         if not self.ifmove:
             if self.shape.get() == 'oval':
-                self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), outline=self.ink.get())
+                self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), outline=self.ink.get(), width=self.width)
             elif self.shape.get() == 'rectangle':
-                self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), outline=self.ink.get())
+                self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), outline=self.ink.get(), width=self.width)
             elif self.shape.get() == 'arc':
-                self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), outline=self.ink.get())
+                self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), outline=self.ink.get(), width=self.width)
             elif self.shape.get() == 'line':
-                self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get())
+                self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), width=self.width)
 
     def release(self, event):
         self.if_press = False
@@ -197,13 +208,13 @@ class Application(tk.Frame):
         self.C.delete("all")
         for obj in objects:
             if obj[0] == 'oval':
-                self.cur_obj = self.C.create_oval(obj[2], obj[3], obj[4], obj[5], outline=obj[7], fill=obj[8])
+                self.cur_obj = self.C.create_oval(obj[2], obj[3], obj[4], obj[5], width=obj[6], outline=obj[7], fill=obj[8])
             elif obj[0] == 'rectangle':
-                self.cur_obj = self.C.create_rectangle(obj[2], obj[3], obj[4], obj[5], outline=obj[7], fill=obj[8])
+                self.cur_obj = self.C.create_rectangle(obj[2], obj[3], obj[4], obj[5], width=obj[6], outline=obj[7], fill=obj[8])
             elif obj[0] == 'arc':
-                self.cur_obj = self.C.create_arc(obj[2], obj[3], obj[4], obj[5], outline=obj[7], fill=obj[8])
+                self.cur_obj = self.C.create_arc(obj[2], obj[3], obj[4], obj[5], width=obj[6], outline=obj[7], fill=obj[8])
             elif obj[0] == 'line':
-                self.cur_obj = self.C.create_line(obj[2], obj[3], obj[4], obj[5], fill=obj[7])
+                self.cur_obj = self.C.create_line(obj[2], obj[3], obj[4], obj[5], width=obj[6], fill=obj[7])
             print(objects)
             print(self.C.find_all())
             print(self.cur_obj)
