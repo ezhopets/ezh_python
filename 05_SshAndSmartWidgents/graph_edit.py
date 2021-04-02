@@ -16,11 +16,16 @@ class Application(tk.Frame):
         self.if_press = False
         self.ifmove = False
 
+        self.shape = tk.StringVar()
+        self.shape.set('oval')
+
+        self.text = tk.StringVar()
+
         self.grid(sticky="NEWS")
         self.create_widgets()
 
-        self.columnconfigure(0, weight=10)
-        self.rowconfigure(0, weight=10)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
     def create_widgets(self):
@@ -43,6 +48,7 @@ class Application(tk.Frame):
         self.F3.grid(row=1, column=0, columnspan=2, sticky="NEWS")
         self.F3.columnconfigure(2, weight=1)
 
+
         self.T = tk.Text(self.F1, undo = True, font = "Courier", wrap=tk.WORD,
                 inactiveselectbackground = "Lime")
         self.load_file(ask=False)
@@ -54,19 +60,32 @@ class Application(tk.Frame):
         self.C.bind("<Button-1>", self.press)
         self.C.bind("<ButtonRelease>", self.release)
         self.C.bind("<Motion>", self.move_draw)
+        self.C.bind_all("<Alt-KeyPress-x>", self.compile_right)
 
         self.ink = tk.Menubutton(self.F2, text = 'Ink', width=7)
         self.width = tk.Menubutton(self.F2, text='1', width=7)
         self.fill = tk.Menubutton(self.F2, text='Fill', width=7)
         self.pic_fill = tk.Menubutton(self.F2, text = 'lol', width=7)
-        self.shape = tk.Menubutton(self.F2, text = 'oval', width=7)
+        self.shape_button = tk.Menubutton(self.F2, textvariable = self.shape, width=7)
+        shapes = ('oval', 'rectangle', 'arc', 'line')
+
+        self.shape_button.menu = tk.Menu(self.shape_button, tearoff=False)
+
+        for shape in shapes:
+            self.shape_button.menu.add_radiobutton(
+                    label=shape,
+                    value=shape,
+                    variable=self.shape)
+
+        self.shape_button['menu'] = self.shape_button.menu
+
         self.coord = tk.Label(self.F2, text = '1:1', width=7)
 
         self.ink.grid(row=0, column=0, sticky="EW")
         self.width.grid(row=0, column=1, sticky="EW")
         self.fill.grid(row=0, column=2, sticky="EW")
         self.pic_fill.grid(row=0, column=3, sticky="EW")
-        self.shape.grid(row=0, column=4, sticky="EW")
+        self.shape_button.grid(row=0, column=4, sticky="EW")
         self.coord.grid(row=0, column=5, sticky="EW")
 
         self.load = tk.Button(self.F3, text = 'Load', width=7, command=self.load_file)
@@ -93,16 +112,28 @@ class Application(tk.Frame):
                 self.last_x, self.last_y = event.x, event.y
             else:
                 self.C.delete(self.cur_obj)
-                self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx2, self.my2, fill='red')
+                if self.shape.get() == 'oval':
+                    self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx2, self.my2, fill='red', outline='yellow')
+                elif self.shape.get() == 'rectangle':
+                    self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx2, self.my2, fill='#010101')
+                elif self.shape.get() == 'arc':
+                    self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx2, self.my2, fill='red')
+                elif self.shape.get() == 'line':
+                    self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx2, self.my2, fill='red')
 
     def press(self, event):
         self.mx1 = event.x
         self.my1 = event.y
         self.if_press = True
-        if self.ifmove:
-            pass
-        else:
-            self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx1, self.my1, fill='red')
+        if not self.ifmove:
+            if self.shape.get() == 'oval':
+                self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx1, self.my1, fill='red')
+            elif self.shape.get() == 'rectangle':
+                self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx1, self.my1, fill='red')
+            elif self.shape.get() == 'arc':
+                self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx1, self.my1, fill='red')
+            elif self.shape.get() == 'line':
+                self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx1, self.my1, fill='red')
 
     def release(self, event):
         self.if_press = False
@@ -110,6 +141,17 @@ class Application(tk.Frame):
         self.mx2 = event.x
         self.my2 = event.y
         self.C.tag_bind(self.cur_obj, '<Button-1>', self.move)
+
+    def compile_right(self, event):
+        self.T.delete(0.0, tk.END)
+        for index in self.C.find_all():
+            self.text.set((f"{self.C.type(index)} "
+                    f"{self.C.coords(index)} "
+                    f"{self.C.itemconfigure(index)['width'][-1]} "
+                    f"{self.C.itemconfigure(index)['outline'][-1]} "
+                    f"{self.C.itemconfigure(index)['fill'][-1]}\n"))
+            self.T.insert(tk.END, self.text.get())
+
 
     def load_file(self, ask= True):
         if ask:
@@ -144,7 +186,7 @@ class Application(tk.Frame):
 
 def main():
     app = Application(title="Graph Edit",
-                        geometry = "750x450",
+                        geometry = "1600x800",
                         filename = "pupa.txt")
     app.mainloop()
 
