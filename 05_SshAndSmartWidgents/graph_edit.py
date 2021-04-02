@@ -1,6 +1,11 @@
 import os
+import re
 import tkinter as tk
+from colors import COLORS
 from tkinter.filedialog import askopenfilename, asksaveasfile
+from tkinter.colorchooser import askcolor
+
+#askcolor()
 
 class Application(tk.Frame):
     def __init__(self, master=None, title="App",
@@ -20,6 +25,14 @@ class Application(tk.Frame):
         self.shape.set('oval')
 
         self.text = tk.StringVar()
+        self.pattern = re.compile("(oval|rectangle|arc|line) (\[(-?\d+\.\d+), "
+                "(-?\d+\.\d+), (-?\d+\.\d+), (-?\d+\.\d+)\]) (\d+\.\d+) "
+                "(#[a-fA-F\d][a-fA-F|\d][a-fA-F\d][a-fA-F\d][a-fA-F\d][a-fA-F\d]|" +
+                '|'.join(COLORS) +
+                ") (#[a-fA-F\d][a-fA-F|\d][a-fA-F\d][a-fA-F\d][a-fA-F\d][a-fA-F\d]|" +
+                '|'.join(COLORS) +
+                ")\n*")
+        print(self.pattern)
 
         self.grid(sticky="NEWS")
         self.create_widgets()
@@ -61,6 +74,7 @@ class Application(tk.Frame):
         self.C.bind("<ButtonRelease>", self.release)
         self.C.bind("<Motion>", self.move_draw)
         self.C.bind_all("<Alt-KeyPress-x>", self.compile_right)
+        self.C.bind_all("<Alt-KeyPress-z>", self.compile_left)
 
         self.ink = tk.Menubutton(self.F2, text = 'Ink', width=7)
         self.width = tk.Menubutton(self.F2, text='1', width=7)
@@ -113,9 +127,9 @@ class Application(tk.Frame):
             else:
                 self.C.delete(self.cur_obj)
                 if self.shape.get() == 'oval':
-                    self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx2, self.my2, fill='red', outline='yellow')
+                    self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx2, self.my2, fill='snow', outline='yellow')
                 elif self.shape.get() == 'rectangle':
-                    self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx2, self.my2, fill='#010101')
+                    self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx2, self.my2, fill='#010a0A')
                 elif self.shape.get() == 'arc':
                     self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx2, self.my2, fill='red')
                 elif self.shape.get() == 'line':
@@ -151,6 +165,33 @@ class Application(tk.Frame):
                     f"{self.C.itemconfigure(index)['outline'][-1]} "
                     f"{self.C.itemconfigure(index)['fill'][-1]}\n"))
             self.T.insert(tk.END, self.text.get())
+
+    def compile_left(self, event):
+        objects = []
+        for i in range(1, int(self.T.index('end').split('.')[0])):
+            line = self.T.get(f"{i}.0", f"{i}.end")
+            if not line:
+                continue
+            objects += [self.pattern.fullmatch(line).groups()]
+            if objects[-1] is None:
+                print("LOshara")
+                return
+
+        self.C.delete("all")
+        for obj in objects:
+            if obj[0] == 'oval':
+                self.cur_obj = self.C.create_oval(obj[2], obj[3], obj[4], obj[5], outline=obj[7], fill=obj[8])
+            elif obj[0] == 'rectangle':
+                self.cur_obj = self.C.create_rectangle(obj[2], obj[3], obj[4], obj[5], outline=obj[7], fill=obj[8])
+            elif obj[0] == 'arc':
+                self.cur_obj = self.C.create_arc(obj[2], obj[3], obj[4], obj[5], outline=obj[7], fill=obj[8])
+            elif obj[0] == 'line':
+                self.cur_obj = self.C.create_line(obj[2], obj[3], obj[4], obj[5], fill=obj[7])
+            print(objects)
+            print(self.C.find_all())
+            print(self.cur_obj)
+            self.C.tag_bind(self.cur_obj, '<Button-1>', self.move)
+
 
 
     def load_file(self, ask= True):
@@ -193,5 +234,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    print('lol')
-
