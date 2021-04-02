@@ -91,7 +91,7 @@ class Application(tk.Frame):
         self.width_button = tk.Button(self.F2, text='Width', command=self.choose_width)
 
         self.fill_button = tk.Button(self.F2, text='Fill', width=7, command=self.choose_fill)
-        self.pic_fill = tk.Menubutton(self.F2, text = 'lol', width=7)
+        self.pic = tk.Label(self.F2, text = 'O', width=1, fg=self.ink.get(), bg=self.fill.get())
         self.shape_button = tk.Menubutton(self.F2, textvariable = self.shape, width=7)
         shapes = ('oval', 'rectangle', 'arc', 'line')
 
@@ -109,7 +109,7 @@ class Application(tk.Frame):
         self.ink_button.grid(row=0, column=0, sticky="EW")
         self.width_button.grid(row=0, column=1, sticky="EW")
         self.fill_button.grid(row=0, column=2, sticky="EW")
-        self.pic_fill.grid(row=0, column=3, sticky="EW")
+        self.pic.grid(row=0, column=3, sticky="EW")
         self.shape_button.grid(row=0, column=4, sticky="EW")
         self.coord.grid(row=0, column=5, sticky="EW")
 
@@ -125,11 +125,14 @@ class Application(tk.Frame):
         color = askcolor()[-1]
         if color:
             self.ink.set(color)
+            self.pic.config(fg=self.ink.get())
 
     def choose_fill(self, *arg):
         color = askcolor()[-1]
         if color:
             self.fill.set(color)
+            self.pic.config(bg=self.fill.get())
+
 
     def choose_width(self, *arg):
         width = askfloat('lol', "Enter")
