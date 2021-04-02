@@ -198,30 +198,37 @@ class Application(tk.Frame):
             self.T.insert(tk.END, self.text.get())
 
     def compile_left(self, event):
+        mistake = False
         objects = []
         for i in range(1, int(self.T.index('end').split('.')[0])):
+            self.T.tag_add(str(i), f"{i}.0", f"{i}.end")
             line = self.T.get(f"{i}.0", f"{i}.end")
+            match = self.pattern.fullmatch(line)
             if not line:
                 continue
-            objects += [self.pattern.fullmatch(line).groups()]
-            if objects[-1] is None:
-                print("LOshara")
-                return
+            if match is None:
+                self.T.tag_config(str(i), background="red", foreground="black")
+                mistake = True
+            else:
+                self.T.tag_config(str(i), background="white", foreground="black")
+                objects += [match.groups()]
 
-        self.C.delete("all")
-        for obj in objects:
-            if obj[0] == 'oval':
-                self.cur_obj = self.C.create_oval(obj[2], obj[3], obj[4], obj[5], width=obj[6], outline=obj[7], fill=obj[8])
-            elif obj[0] == 'rectangle':
-                self.cur_obj = self.C.create_rectangle(obj[2], obj[3], obj[4], obj[5], width=obj[6], outline=obj[7], fill=obj[8])
-            elif obj[0] == 'arc':
-                self.cur_obj = self.C.create_arc(obj[2], obj[3], obj[4], obj[5], width=obj[6], outline=obj[7], fill=obj[8])
-            elif obj[0] == 'line':
-                self.cur_obj = self.C.create_line(obj[2], obj[3], obj[4], obj[5], width=obj[6], fill=obj[7])
-            print(objects)
-            print(self.C.find_all())
-            print(self.cur_obj)
-            self.C.tag_bind(self.cur_obj, '<Button-1>', self.move)
+
+        if not mistake:
+            self.C.delete("all")
+            for obj in objects:
+                if obj[0] == 'oval':
+                    self.cur_obj = self.C.create_oval(obj[2], obj[3], obj[4], obj[5], width=obj[6], outline=obj[7], fill=obj[8])
+                elif obj[0] == 'rectangle':
+                    self.cur_obj = self.C.create_rectangle(obj[2], obj[3], obj[4], obj[5], width=obj[6], outline=obj[7], fill=obj[8])
+                elif obj[0] == 'arc':
+                    self.cur_obj = self.C.create_arc(obj[2], obj[3], obj[4], obj[5], width=obj[6], outline=obj[7], fill=obj[8])
+                elif obj[0] == 'line':
+                    self.cur_obj = self.C.create_line(obj[2], obj[3], obj[4], obj[5], width=obj[6], fill=obj[7])
+                print(objects)
+                print(self.C.find_all())
+                print(self.cur_obj)
+                self.C.tag_bind(self.cur_obj, '<Button-1>', self.move)
 
 
 
@@ -261,7 +268,6 @@ def main():
                         geometry = "1600x800",
                         filename = "pupa.txt")
     app.mainloop()
-
 
 if __name__ == "__main__":
     main()
