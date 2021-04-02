@@ -30,6 +30,9 @@ class Application(tk.Frame):
         self.ink = tk.StringVar()
         self.ink.set('black')
 
+        self.fill = tk.StringVar()
+        self.fill.set('white')
+
         self.text = tk.StringVar()
         self.pattern = re.compile("(oval|rectangle|arc|line) (\[(-?\d+\.\d+), "
                 "(-?\d+\.\d+), (-?\d+\.\d+), (-?\d+\.\d+)\]) (\d+\.\d+) "
@@ -84,7 +87,7 @@ class Application(tk.Frame):
 
         self.ink_button = tk.Button(self.F2, text = 'Ink', width=7, command=self.choose_ink)
         self.width = tk.Menubutton(self.F2, text='1', width=7)
-        self.fill = tk.Menubutton(self.F2, text='Fill', width=7)
+        self.fill_button = tk.Button(self.F2, text='Fill', width=7, command=self.choose_fill)
         self.pic_fill = tk.Menubutton(self.F2, text = 'lol', width=7)
         self.shape_button = tk.Menubutton(self.F2, textvariable = self.shape, width=7)
         shapes = ('oval', 'rectangle', 'arc', 'line')
@@ -103,7 +106,7 @@ class Application(tk.Frame):
 
         self.ink_button.grid(row=0, column=0, sticky="EW")
         self.width.grid(row=0, column=1, sticky="EW")
-        self.fill.grid(row=0, column=2, sticky="EW")
+        self.fill_button.grid(row=0, column=2, sticky="EW")
         self.pic_fill.grid(row=0, column=3, sticky="EW")
         self.shape_button.grid(row=0, column=4, sticky="EW")
         self.coord.grid(row=0, column=5, sticky="EW")
@@ -118,6 +121,10 @@ class Application(tk.Frame):
 
     def choose_ink(self, *arg):
         self.ink.set(askcolor()[-1])
+
+    def choose_fill(self, *arg):
+        self.fill.set(askcolor()[-1])
+
 
     def move(self, event):
         self.index = self.C.find_closest(event.x, event.y)
@@ -137,13 +144,13 @@ class Application(tk.Frame):
             else:
                 self.C.delete(self.cur_obj)
                 if self.shape.get() == 'oval':
-                    self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx2, self.my2, fill='snow', outline=self.ink.get())
+                    self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), outline=self.ink.get())
                 elif self.shape.get() == 'rectangle':
-                    self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx2, self.my2, fill='#010a0A', outline=self.ink.get())
+                    self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), outline=self.ink.get())
                 elif self.shape.get() == 'arc':
-                    self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx2, self.my2, fill='red', outline=self.ink.get())
+                    self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), outline=self.ink.get())
                 elif self.shape.get() == 'line':
-                    self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx2, self.my2, fill='red')
+                    self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get())
 
     def press(self, event):
         self.mx1 = event.x
@@ -151,13 +158,13 @@ class Application(tk.Frame):
         self.if_press = True
         if not self.ifmove:
             if self.shape.get() == 'oval':
-                self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx1, self.my1, fill='red', outline=self.ink.get())
+                self.cur_obj = self.C.create_oval(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), outline=self.ink.get())
             elif self.shape.get() == 'rectangle':
-                self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx1, self.my1, fill='red', outline=self.ink.get())
+                self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), outline=self.ink.get())
             elif self.shape.get() == 'arc':
-                self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx1, self.my1, fill='red', outline=self.ink.get())
+                self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), outline=self.ink.get())
             elif self.shape.get() == 'line':
-                self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx1, self.my1, fill='red')
+                self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get())
 
     def release(self, event):
         self.if_press = False
