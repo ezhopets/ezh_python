@@ -36,7 +36,7 @@ class Application(tk.Frame):
         self.width = 1.0
 
         self.text = tk.StringVar()
-        self.pattern = re.compile("(oval|rectangle|arc|line) (\[(-?\d+\.\d+), "
+        self.pattern = re.compile("(oval|rectangle|arc) (\[(-?\d+\.\d+), "
                 "(-?\d+\.\d+), (-?\d+\.\d+), (-?\d+\.\d+)\]) (\d+\.\d+) "
                 "(#[a-fA-F\d][a-fA-F|\d][a-fA-F\d][a-fA-F\d][a-fA-F\d][a-fA-F\d]|" +
                 '|'.join(COLORS) +
@@ -93,7 +93,7 @@ class Application(tk.Frame):
         self.fill_button = tk.Button(self.F2, text='Fill', width=7, command=self.choose_fill)
         self.pic = tk.Label(self.F2, text = 'O', width=1, fg=self.ink.get(), bg=self.fill.get())
         self.shape_button = tk.Menubutton(self.F2, textvariable = self.shape, width=7)
-        shapes = ('oval', 'rectangle', 'arc', 'line')
+        shapes = ('oval', 'rectangle', 'arc')
 
         self.shape_button.menu = tk.Menu(self.shape_button, tearoff=False)
 
@@ -135,7 +135,7 @@ class Application(tk.Frame):
 
 
     def choose_width(self, *arg):
-        width = askfloat('lol', "Enter")
+        width = askfloat('Choose Width', "")
         if width:
             self.width = width
 
@@ -163,8 +163,6 @@ class Application(tk.Frame):
                     self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), outline=self.ink.get(), width=self.width)
                 elif self.shape.get() == 'arc':
                     self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), outline=self.ink.get(), width=self.width)
-                elif self.shape.get() == 'line':
-                    self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx2, self.my2, fill=self.fill.get(), width=self.width)
 
     def press(self, event):
         self.mx1 = event.x
@@ -177,8 +175,6 @@ class Application(tk.Frame):
                 self.cur_obj = self.C.create_rectangle(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), outline=self.ink.get(), width=self.width)
             elif self.shape.get() == 'arc':
                 self.cur_obj = self.C.create_arc(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), outline=self.ink.get(), width=self.width)
-            elif self.shape.get() == 'line':
-                self.cur_obj = self.C.create_line(self.mx1, self.my1, self.mx1, self.my1, fill=self.fill.get(), width=self.width)
 
     def release(self, event):
         self.if_press = False
@@ -223,11 +219,6 @@ class Application(tk.Frame):
                     self.cur_obj = self.C.create_rectangle(obj[2], obj[3], obj[4], obj[5], width=obj[6], outline=obj[7], fill=obj[8])
                 elif obj[0] == 'arc':
                     self.cur_obj = self.C.create_arc(obj[2], obj[3], obj[4], obj[5], width=obj[6], outline=obj[7], fill=obj[8])
-                elif obj[0] == 'line':
-                    self.cur_obj = self.C.create_line(obj[2], obj[3], obj[4], obj[5], width=obj[6], fill=obj[7])
-                print(objects)
-                print(self.C.find_all())
-                print(self.cur_obj)
                 self.C.tag_bind(self.cur_obj, '<Button-1>', self.move)
 
 
