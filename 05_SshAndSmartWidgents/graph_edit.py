@@ -24,6 +24,9 @@ class Application(tk.Frame):
         self.shape = tk.StringVar()
         self.shape.set('oval')
 
+        self.xy = tk.IntVar()
+        self.xy.set("1:1")
+
         self.text = tk.StringVar()
         self.pattern = re.compile("(oval|rectangle|arc|line) (\[(-?\d+\.\d+), "
                 "(-?\d+\.\d+), (-?\d+\.\d+), (-?\d+\.\d+)\]) (\d+\.\d+) "
@@ -93,7 +96,7 @@ class Application(tk.Frame):
 
         self.shape_button['menu'] = self.shape_button.menu
 
-        self.coord = tk.Label(self.F2, text = '1:1', width=7)
+        self.coord = tk.Label(self.F2, textvariable = self.xy, width=7)
 
         self.ink.grid(row=0, column=0, sticky="EW")
         self.width.grid(row=0, column=1, sticky="EW")
@@ -119,6 +122,7 @@ class Application(tk.Frame):
     def move_draw(self, event):
         self.mx2 = event.x
         self.my2 = event.y
+        self.xy.set(f"{event.x}:{event.y}")
 
         if (self.if_press):
             if (self.ifmove):
